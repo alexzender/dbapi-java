@@ -18,7 +18,7 @@ Requirements
 * Cassandra 1.1.5 (http://cassandra.apache.org/download/ or http://www.datastax.com/download/community)
 
 
-Building  
+Build Instructions
 ------------
 
 The standard build process with Maven is supported.
@@ -57,3 +57,5 @@ To create a factory you need to specify a map with configuration parameters and 
         EntityManager em = factory.createEntityManager();
 
 ```
+
+Please see dbapi.test.system.CRUDTest for more details on Create/Find/Delete commands that are currently supported.
