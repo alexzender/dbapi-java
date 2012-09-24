@@ -70,11 +70,15 @@ public class AnnotationService
     public AnnotatedEntity lookup(String className)
     {
         AnnotatedEntity ann = managedEntities.get(className);
+        
         if (null == ann)
         {
+            String classSuffix = "." + className;
+            String classImplSuffix = "." + className + "Impl";
+            
             for (String entityName : managedEntities.keySet())
             {
-                if (entityName.endsWith("." + className) || entityName.endsWith("." + className + "Impl"))
+                if (entityName.endsWith(classSuffix) || entityName.endsWith(classImplSuffix))
                 {
                     ann = managedEntities.get(entityName);
                     break;

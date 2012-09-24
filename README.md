@@ -59,3 +59,20 @@ To create a factory you need to specify a map with configuration parameters and 
 ```
 
 Please see dbapi.test.system.CRUDTest for more details on Create/Find/Delete commands that are currently supported.
+In order to play with this test you will need data structures to be pre-created in Cassandra. Use the following script for that:
+
+```
+create keyspace tests;
+use tests;
+
+create column family user with
+  comparator = UTF8Type and
+  column_metadata =
+  [
+  	{column_name: username, validation_class: UTF8Type},
+    {column_name: displayName, validation_class: UTF8Type},
+    {column_name: bio, validation_class: UTF8Type},
+    {column_name: password, validation_class: UTF8Type}
+  ];
+
+```

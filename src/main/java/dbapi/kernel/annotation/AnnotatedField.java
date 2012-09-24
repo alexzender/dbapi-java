@@ -146,6 +146,8 @@ public class AnnotatedField
         {
             throw new KernelException(ex);
         }
+        
+        //TODO: replace if/else by dispatcher
         if(null == data)
         {
             res = "".getBytes();

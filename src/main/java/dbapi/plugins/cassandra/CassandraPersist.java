@@ -2,7 +2,6 @@ package dbapi.plugins.cassandra;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import org.apache.cassandra.thrift.ColumnOrSuperColumn;
 import org.apache.cassandra.thrift.ConsistencyLevel;
 import org.apache.cassandra.thrift.InvalidRequestException;
 import org.apache.cassandra.thrift.Mutation;
-import org.apache.cassandra.thrift.SuperColumn;
 import org.apache.cassandra.thrift.TimedOutException;
 import org.apache.cassandra.thrift.UnavailableException;
 import org.apache.log4j.Logger;
@@ -26,7 +24,6 @@ import com.google.common.base.Preconditions;
 import dbapi.kernel.annotation.AnnotatedEntity;
 import dbapi.kernel.annotation.AnnotatedField;
 import dbapi.plugins.DBPluginException;
-import dbapi.plugins.EntityAwareCommand;
 import dbapi.plugins.PersistCommand;
 /**
  * 
