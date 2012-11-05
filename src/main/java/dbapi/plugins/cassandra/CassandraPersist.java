@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -31,91 +32,95 @@ import dbapi.plugins.PersistCommand;
  *
  */
 public class CassandraPersist
-    extends CassandraCommand
-    implements PersistCommand
+extends CassandraCommand
+implements PersistCommand
 {
     private static final Logger log = Logger.getLogger(CassandraPersist.class);
-    
-    
+
+
     @Inject
     private ObjectIO objectIO;
-    
+
     @Override
-    public void execute(Object entity, AnnotatedEntity entityDef)
-    {   
+    public void execute(final Object entity, final AnnotatedEntity entityDef)
+    {
         Preconditions.checkArgument(null != entity, "Valid entity object is required");
-        
+
         log.trace("Start saving new object into cassandra");
-        
-        Cassandra.Client client = getConnection().getClient();
-        
+
+        final Cassandra.Client client = getConnection().getClient();
+
         // define column parent
         //ColumnParent parent = new ColumnParent(annotated.getTable());
 
-        Long id = System.nanoTime(); 
-        
+        final String id = UUID.randomUUID().toString();
+
         if(log.isDebugEnabled())
-            log.debug("New object id = " + id);
-        
-        entityDef.setId(entity, id);
-        
-        // define row id
-        ByteBuffer rowid = ByteBuffer.allocate(8).putLong(id);
-        rowid.position(0);
-        List<Mutation> mutations = new ArrayList<Mutation>();
-        long date = System.currentTimeMillis();
-        for(AnnotatedField field : entityDef.getFields().values())
         {
-            Column dataColumn = new Column();
+            log.debug("New object id = " + id);
+        }
+
+        entityDef.setId(entity, id);
+
+        // define row id
+        final ByteBuffer rowid = ByteBuffer.wrap(id.getBytes());
+        rowid.position(0);
+        final List<Mutation> mutations = new ArrayList<Mutation>();
+        final long date = System.currentTimeMillis();
+        for(final AnnotatedField field : entityDef.getFields().values())
+        {
+            final Column dataColumn = new Column();
             dataColumn.setName(field.getColumn().getBytes());
-            dataColumn.setValue(field.getValue(entity));
+            dataColumn.setValue(field.getValueBytes(entity));
             dataColumn.setTimestamp(date);
-            
-            ColumnOrSuperColumn col = new ColumnOrSuperColumn();
+
+            final ColumnOrSuperColumn col = new ColumnOrSuperColumn();
             col.setColumn(dataColumn);
-            
-            Mutation m = new Mutation();
+
+            final Mutation m = new Mutation();
             m.setColumn_or_supercolumn(col);
 
             mutations.add(m);
         }
-        
-        
-        Map<String, List<Mutation>> columnFamilyMutations = new HashMap<String, List<Mutation>>();
+
+
+        final Map<String, List<Mutation>> columnFamilyMutations = new HashMap<String, List<Mutation>>();
         columnFamilyMutations.put(entityDef.getTable(), mutations);
-        
-        Map<ByteBuffer, Map<String, List<Mutation>>> mutationsMap = new HashMap<ByteBuffer, Map<String, List<Mutation>>>();
-        
+
+        final Map<ByteBuffer, Map<String, List<Mutation>>> mutationsMap = new HashMap<ByteBuffer, Map<String, List<Mutation>>>();
+
         mutationsMap.put(rowid, columnFamilyMutations);
-        
+
         try
         {
             client.batch_mutate(mutationsMap, ConsistencyLevel.ONE);
             //getConnection().getTransport().flush();
-            
-           
-            
+
+
+
             if(log.isDebugEnabled())
+            {
                 log.debug("Saved successfully object by id = " + id);
+            }
         }
-        catch (InvalidRequestException e)
-        {
-           throw new DBPluginException(e);
-        }
-        catch (UnavailableException e)
+        catch (final InvalidRequestException e)
         {
             throw new DBPluginException(e);
         }
-        catch (TimedOutException e)
+        catch (final UnavailableException e)
+        {
+            throw new DBPluginException(e);
+        }
+        catch (final TimedOutException e)
         {
             //TODO: retry
             throw new DBPluginException(e);
         }
-        catch (TException e)
+        catch (final TException e)
         {
             throw new DBPluginException(e);
-        }        
-        
+        }
+
     }
 
 }

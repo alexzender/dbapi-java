@@ -7,63 +7,69 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.persistence.Id;
-
 import org.apache.log4j.Logger;
 
 import dbapi.api.KernelException;
+import dbapi.api.meta.DBId;
 import dbapi.kernel.annotation.AnnotatedEntity;
+import dbapi.kernel.annotation.AnnotatedField;
 /**
  * 
  * @author alex
  *
  */
-public class IdVisitor   
+public class IdVisitor
 {
     private static Logger log = Logger.getLogger(IdVisitor.class);
-    
-   
-    public boolean visitMethod(Method method, Class<?> cls, AnnotatedEntity ann)
+
+
+    public boolean visitMethod(final Method method, final Class<?> cls, final AnnotatedEntity ann)
     {
-        Id id = method.getAnnotation(Id.class);
-        
+        final DBId id = method.getAnnotation(DBId.class);
+
         if (id == null)
         {
             return false;
         }
-        
+
         ann.setIdGetter(method);
-                
-        String setterName = "set" + method.getName().substring(3);
-        
+
+        final String setterName = "set" + method.getName().substring(3);
+
         try
         {
-            Method idSetter = cls.getMethod(setterName, method.getReturnType());
+            final Method idSetter = cls.getMethod(setterName, method.getReturnType());
             ann.setIdSetter(idSetter);
         }
-        catch (SecurityException e)
+        catch (final SecurityException e)
         {
             log.error("", e);
         }
-        catch (NoSuchMethodException e)
+        catch (final NoSuchMethodException e)
         {
             log.debug("Failed to find id setter method for " + cls.getName());
         }
-        
-        
+
+
         return true;
     }
 
-    
-    public void visitField(Class<?> cls, Field field, AnnotatedEntity ann)
+
+    public boolean visitField(final Class<?> cls, final Field field, final AnnotatedEntity ann)
     {
-        Id id = field.getAnnotation(Id.class);
+        boolean isId = false;
+        final DBId id = field.getAnnotation(DBId.class);
         if (id != null)
         {
+            isId = true;
+
+            final AnnotatedField fieldDef = ann.getFields().get(field.getName());
+            fieldDef.setId(true);
+
             try
             {
-                BeanInfo info = Introspector.getBeanInfo(cls);
-                for (PropertyDescriptor descriptor : info.getPropertyDescriptors())
+                final BeanInfo info = Introspector.getBeanInfo(cls);
+                for (final PropertyDescriptor descriptor : info.getPropertyDescriptors())
                 {
                     if (descriptor.getName().equals(field.getName()))
                     {
@@ -73,10 +79,11 @@ public class IdVisitor
                     }
                 }
             }
-            catch (IntrospectionException e)
+            catch (final IntrospectionException e)
             {
                 throw new KernelException(e);
             }
         }
+        return isId;
     }
 }

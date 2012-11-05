@@ -25,88 +25,82 @@ import dbapi.plugins.FindCommand;
  *
  */
 public class CassandraFind
-    extends CassandraCommand
-    implements FindCommand
+extends CassandraCommand
+implements FindCommand
 {
 
     @Override
-    public <T> T find(Class<T> cls, AnnotatedEntity def, Object id)
+    public <T> T find(final Class<T> cls, final AnnotatedEntity def, final String id)
     {
-        CassandraConnection client = getConnection();
-        
-        ColumnParent columnParent = new ColumnParent(def.getTable());
-        
-        SlicePredicate predicate = new SlicePredicate();
+        final CassandraConnection client = getConnection();
+
+        final ColumnParent columnParent = new ColumnParent(def.getTable());
+
+        final SlicePredicate predicate = new SlicePredicate();
         predicate.setSlice_range(new SliceRange(ByteBuffer.wrap(new byte[0]), ByteBuffer.wrap(new byte[0]), false, 100));
 
-        ByteBuffer key = null;
-        
-        //FIXME: this is not good
-        if(id instanceof Long)
-        {
-            key = Utils.longToByteBuffer((Long) id);
-        }
-        
+        final ByteBuffer key = ByteBuffer.wrap(id.getBytes());
+
         T res = null;
-         
+
         try
         {
-            List<ColumnOrSuperColumn> columns = client.getClient().get_slice(key, columnParent, predicate, ConsistencyLevel.ONE);
-            
+            final List<ColumnOrSuperColumn> columns = client.getClient().get_slice(key, columnParent, predicate, ConsistencyLevel.ONE);
+
             if(null == columns || columns.isEmpty())
             {
                 return res;
             }
-            
+
             res = cls.newInstance();
-            
-            for(ColumnOrSuperColumn column : columns)
+
+            for(final ColumnOrSuperColumn column : columns)
             {
-                byte[] nameBytes = column.getColumn().getName();
-                String name = new String(nameBytes);
-                
-                AnnotatedField field = def.getFields().get(name);
-                
-                byte[] valueBytes = column.getColumn().getValue();
-                
-                
-                Method setter = field.getSetter();
+                final byte[] nameBytes = column.getColumn().getName();
+                final String name = new String(nameBytes);
+
+                final AnnotatedField field = def.getFields().get(name);
+
+                final byte[] valueBytes = column.getColumn().getValue();
+
+
+                final Method setter = field.getSetter();
                 setter.invoke(res, Utils.bytesToTypedValue(field.getType(), valueBytes));
             }
         }
-        catch (InvalidRequestException e)
-        {
-           throw new DBPluginException(e);
-        }
-        catch (UnavailableException e)
+        catch (final InvalidRequestException e)
         {
             throw new DBPluginException(e);
         }
-        catch (TimedOutException e)
+        catch (final UnavailableException e)
+        {
+            throw new DBPluginException(e);
+        }
+        catch (final TimedOutException e)
         {
             //TODO: retry
             throw new DBPluginException(e);
         }
-        catch (TException e)
-        {
-            throw new DBPluginException(e);
-        }   
-        catch (InstantiationException e)
+        catch (final TException e)
         {
             throw new DBPluginException(e);
         }
-        catch (IllegalAccessException e)
+        catch (final InstantiationException e)
         {
             throw new DBPluginException(e);
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalAccessException e)
+        {
+            throw new DBPluginException(e);
+        }
+        catch (final IllegalArgumentException e)
         {
             throw new DBPluginException(e);        }
-        catch (InvocationTargetException e)
+        catch (final InvocationTargetException e)
         {
             throw new DBPluginException(e);
-        }       
-        
+        }
+
         return res;
     }
 

@@ -3,13 +3,15 @@ package dbapi.kernel.annotation.index;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.persistence.Column;
-import javax.persistence.Lob;
+import javax.inject.Inject;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
+import dbapi.api.meta.DBColumn;
+import dbapi.api.meta.DBLob;
 import dbapi.kernel.annotation.AnnotatedEntity;
+import dbapi.kernel.annotation.AnnotatedEntityIndexer;
 import dbapi.kernel.annotation.AnnotatedField;
 /**
  * 
@@ -17,16 +19,19 @@ import dbapi.kernel.annotation.AnnotatedField;
  *
  */
 public class FieldVisitor
-   
+
 {
-    public void visitMethod(Method method, AnnotatedField field)
+    @Inject
+    private AnnotatedEntityIndexer indexer;
+
+    public void visitMethod(final Method method, final AnnotatedField field)
     {
         Preconditions.checkArgument(null != method, "Valid method is required");
         Preconditions.checkArgument(null != field, "Valid field is required");
-        
-        Column columnAnn = method.getAnnotation(Column.class);
-        
-        
+
+        final DBColumn columnAnn = method.getAnnotation(DBColumn.class);
+
+
         int length = 0;
         String column = null;
         if (null != columnAnn)
@@ -39,66 +44,68 @@ public class FieldVisitor
             column = method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4);
         }
 
-        Lob lob = method.getAnnotation(Lob.class);
+        final DBLob lob = method.getAnnotation(DBLob.class);
         if(null != lob)
         {
             field.setLob(true);
         }
-        
+
         field.setColumn(column);
-        
-        //avoid default @Column length 
-        if(length != 255) 
+
+        //avoid default @Column length
+        if(length != 255)
         {
             field.setLength(length);
         }
+
+        if (field.isComplexType())
+        {
+            final AnnotatedEntity def = indexer.build(field.getType());
+            field.setComplexDef(def);
+        }
     }
-    
-    public void visitField(Field field, AnnotatedEntity ann)
+
+    public void visitField(final Field field, final AnnotatedEntity ann)
     {
-        Column columnAnn = field.getAnnotation(Column.class);
-        Lob lobAnn = field.getAnnotation(Lob.class);
-        
+        final DBColumn columnAnn = field.getAnnotation(DBColumn.class);
+        final DBLob lobAnn = field.getAnnotation(DBLob.class);
+
         if(null != columnAnn)
         {
-            boolean newJpaField = false;
-            AnnotatedField jpaField = ann.getFields().get(field.getName());
-            
-            if(jpaField == null)
+            boolean newbie = false;
+            AnnotatedField fieldIndex = ann.getFields().get(field.getName());
+
+            if(fieldIndex == null)
             {
-                jpaField = new AnnotatedField();
-                newJpaField = true;
+                fieldIndex = new AnnotatedField();
+                newbie = true;
             }
-            
-            String column = columnAnn.name();
-            String columnDefinition = columnAnn.columnDefinition();
-            int length = columnAnn.length();
-            
+
+            final String column = columnAnn.name();
             if(!Strings.isNullOrEmpty(column))
             {
-                jpaField.setColumn(column);
+                fieldIndex.setColumn(column);
             }
-            
-            if(!Strings.isNullOrEmpty(columnDefinition))
-            {
-                jpaField.setColumnDefinition(columnDefinition);
-            }
-            
-            //support default @Column length 
-            if(length != 255)
-            {
-                jpaField.setLength(length);
-            }
-            
+
+            final int length = columnAnn.length();
+            fieldIndex.setLength(length);
+
             if(lobAnn != null)
             {
-                jpaField.setLob(true);
+                fieldIndex.setLob(true);
             }
-            
-            if(newJpaField)
+
+            if(newbie)
             {
-                jpaField.setClassField(field);
-                ann.getFields().put(field.getName(), jpaField);
+                fieldIndex.setClassField(field);
+
+                if (fieldIndex.isComplexType())
+                {
+                    final AnnotatedEntity def = indexer.build(fieldIndex.getType());
+                    fieldIndex.setComplexDef(def);
+                }
+
+                ann.getFields().put(field.getName(), fieldIndex);
             }
         }
     }

@@ -1,6 +1,6 @@
 package dbapi.plugins;
 
-import java.util.Map;
+import dbapi.api.DBConfig;
 
 /**
  * 
@@ -9,19 +9,15 @@ import java.util.Map;
  */
 public class DBPluginContext
 {
-    private Map<String, String> config;
-    
-    
-    
-    public DBPluginContext(Map<String, String> config)
-    {     
+    private final DBConfig config;
+
+    public DBPluginContext(final DBConfig config)
+    {
         this.config = config;
     }
 
-
-
-    public String getProperty(String name)
+    public DBConfig getConfig()
     {
-        return config.get(name);
+        return config;
     }
 }

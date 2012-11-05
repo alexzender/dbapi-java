@@ -24,60 +24,60 @@ import dbapi.plugins.DBPluginContext;
 public class CassandraConnector
 {
     private static final Logger log = Logger.getLogger(CassandraConnector.class);
-    
+
     public static final String CFG_KEYSPACE = "plugins.cassandra.keyspace";
     public static final String CFG_HOST = "plugins.cassandra.host";
     public static final String CFG_PORT = "plugins.cassandra.port";
-    
-    public String getKeyspace(DBPluginContext ctx)
+
+    public String getKeyspace(final DBPluginContext ctx)
     {
-        return ctx.getProperty(CFG_KEYSPACE);
-    }
-    
-    public String getHost(DBPluginContext ctx)
-    {
-        return ctx.getProperty(CFG_HOST);
-    }
-    
-    public int getPort(DBPluginContext ctx)
-    {
-        return Integer.parseInt(ctx.getProperty(CFG_PORT));
+        return ctx.getConfig().getDatabase();
     }
 
-    public CassandraConnection connect(DBPluginContext ctx)
+    public String getHost(final DBPluginContext ctx)
+    {
+        return ctx.getConfig().getHost();
+    }
+
+    public int getPort(final DBPluginContext ctx)
+    {
+        return ctx.getConfig().getPort();
+    }
+
+    public CassandraConnection connect(final DBPluginContext ctx)
     {
         validate(ctx);
-        
-        TTransport transport = new TFramedTransport(new TSocket(getHost(ctx), getPort(ctx)));
-        TProtocol protocol = new TBinaryProtocol(transport);
-        Cassandra.Client client = new Cassandra.Client(protocol);
-       
+
+        final TTransport transport = new TFramedTransport(new TSocket(getHost(ctx), getPort(ctx)));
+        final TProtocol protocol = new TBinaryProtocol(transport);
+        final Cassandra.Client client = new Cassandra.Client(protocol);
+
 
         try
         {
             transport.open();
             client.set_keyspace(getKeyspace(ctx));
         }
-        catch (InvalidRequestException e)
+        catch (final InvalidRequestException e)
         {
             log.error("Invalid request to Cassandra", e);
             throw new KernelException("Invalid request to Cassandra", e);
         }
-        catch (TException e)
+        catch (final TException e)
         {
             log.error("Failed to connect to Cassandra", e);
             throw new KernelException("Failed to connect to Cassandra", e);
         }
-        
-        CassandraConnection res = new CassandraConnection(transport, client);
-        
+
+        final CassandraConnection res = new CassandraConnection(transport, client);
+
         return res;
     }
-    
-    private void validate(DBPluginContext ctx)
+
+    private void validate(final DBPluginContext ctx)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(getKeyspace(ctx)), "Cassandra keyspace is missed in the configuration");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(getHost(ctx)), "Cassandra host is missed in the configuration");
-        getPort(ctx); 
+        getPort(ctx);
     }
 }

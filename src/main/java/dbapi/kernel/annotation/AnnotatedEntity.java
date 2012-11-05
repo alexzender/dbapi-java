@@ -19,17 +19,17 @@ public class AnnotatedEntity
     private String table;
     private Method idGetter;
     private Method idSetter;
-    
+
     private Class<?> clazz;
     private Map<String, Method> getters = new HashMap<String, Method>();
     private Map<String, AnnotatedField> fields = new HashMap<String, AnnotatedField>();
-    
-        
+
+
     public String getTable()
     {
         return table;
     }
-    public void setTable(String table)
+    public void setTable(final String table)
     {
         this.table = table;
     }
@@ -37,7 +37,7 @@ public class AnnotatedEntity
     {
         return idGetter;
     }
-    public void setIdGetter(Method idGetter)
+    public void setIdGetter(final Method idGetter)
     {
         this.idGetter = idGetter;
     }
@@ -45,7 +45,7 @@ public class AnnotatedEntity
     {
         return idSetter;
     }
-    public void setIdSetter(Method idSetter)
+    public void setIdSetter(final Method idSetter)
     {
         this.idSetter = idSetter;
     }
@@ -53,7 +53,7 @@ public class AnnotatedEntity
     {
         return clazz;
     }
-    public void setClazz(Class<?> clazz)
+    public void setClazz(final Class<?> clazz)
     {
         this.clazz = clazz;
     }
@@ -61,7 +61,7 @@ public class AnnotatedEntity
     {
         return getters;
     }
-    public void setGetters(Map<String, Method> getters)
+    public void setGetters(final Map<String, Method> getters)
     {
         this.getters = getters;
     }
@@ -69,69 +69,91 @@ public class AnnotatedEntity
     {
         return fields;
     }
-    public void setFields(Map<String, AnnotatedField> fields)
+    public void setFields(final Map<String, AnnotatedField> fields)
     {
         this.fields = fields;
-    }    
-    public void addGetter(Method method)
+    }
+    public void addGetter(final Method method)
     {
         getters.put(method.getName(), method);
     }
-    
-    public ByteBuffer getIdBytes(Object entity)
+
+    public Object getId(final Object entity)
     {
-        ByteBuffer res = null;
+        Object obj;
         try
         {
-            Object obj = getIdGetter().invoke(entity);
+            obj = getIdGetter().invoke(entity);
+        }
+        catch (final IllegalArgumentException e)
+        {
+            throw new KernelException(e);
+        }
+        catch (final IllegalAccessException e)
+        {
+            throw new KernelException(e);
+        }
+        catch (final InvocationTargetException e)
+        {
+            throw new KernelException(e);
+        }
+        return obj;
+    }
+
+    public ByteBuffer getIdBytes(final Object entity)
+    {
+        final ByteBuffer res = null;
+        try
+        {
+            final Object obj = getIdGetter().invoke(entity);
             if(null == obj)
             {
                 return res;
             }
             else if(obj instanceof Long)
             {
-                Long longValue = (Long) obj;
+                final Long longValue = (Long) obj;
                 return Utils.longToByteBuffer(longValue);
             }
             else if (obj instanceof String)
             {
-                String strValue = (String) obj;
+                final String strValue = (String) obj;
                 return ByteBuffer.wrap(strValue.getBytes());
             }
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             throw new KernelException(e);
         }
-        catch (IllegalAccessException e)
+        catch (final IllegalAccessException e)
         {
             throw new KernelException(e);
         }
-        catch (InvocationTargetException e)
+        catch (final InvocationTargetException e)
         {
             throw new KernelException(e);
         }
-        
+
         return res;
     }
-    public void setId(Object entity, Object id)
+    public void setId(final Object entity, final Object id)
     {
         try
         {
-            getIdSetter().invoke(entity, id);            
+            getIdSetter().invoke(entity, id);
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             throw new KernelException(e);
         }
-        catch (IllegalAccessException e)
+        catch (final IllegalAccessException e)
         {
             throw new KernelException(e);
         }
-        catch (InvocationTargetException e)
+        catch (final InvocationTargetException e)
         {
             throw new KernelException(e);
         }
     }
-   
+
 }
