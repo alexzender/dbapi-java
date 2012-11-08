@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import dbapi.api.DBAPI;
 import dbapi.api.DBConfig;
+import dbapi.api.DBQuery;
 import dbapi.api.DBSession;
 import dbapi.api.DBSessionFactory;
 import dbapi.test.system.model.User;
@@ -95,6 +96,8 @@ public class MongoCRUDTest
         }
     }
 
+
+
     @Test
     public void testCreateDeleteUserWithCollection()
     {
@@ -121,6 +124,16 @@ public class MongoCRUDTest
         assertNotNull("Failed to lookup newly created object ", userCopy);
         assertEquals("Saved&Read Objects do not equal", user, userCopy);
         assertTrue("Failed to load embedded collection ", null != userCopy.getFriends() && userCopy.getFriends().size() == 1);
+
+        final DBQuery<UserWithEmbeddedCollection> query = em.queryOn(UserWithEmbeddedCollection.class);
+        query.getModel().setUsername("john");
+
+
+        final List<UserWithEmbeddedCollection> queryRes = em.query(query);
+        assertNotNull("Failed search for a newly created object ", queryRes);
+        assertTrue("Failed to find newly created object", !queryRes.isEmpty());
+        assertTrue("Search returned more then one results", queryRes.size() == 1);
+        assertEquals("Saved&Read Objects do not equal", user, queryRes.get(0));
 
 
         em.delete(user);

@@ -12,10 +12,10 @@ import com.mongodb.WriteConcern;
 import dbapi.api.KernelException;
 import dbapi.plugins.DBPlugin;
 import dbapi.plugins.DBPluginContext;
-import dbapi.plugins.GetCommand;
-import dbapi.plugins.SaveCommand;
-import dbapi.plugins.QueryCommand;
 import dbapi.plugins.DeleteCommand;
+import dbapi.plugins.GetCommand;
+import dbapi.plugins.QueryCommand;
+import dbapi.plugins.SaveCommand;
 import dbapi.plugins.SchemaCreateCommand;
 import dbapi.plugins.SchemaDeleteCommand;
 
@@ -38,6 +38,9 @@ public class MongoDBPlugin implements DBPlugin
 
     @Inject
     private MongoDelete delete;
+
+    @Inject
+    private MongoQuery query;
 
     @Override
     public void init(final DBPluginContext ctx)
@@ -65,6 +68,9 @@ public class MongoDBPlugin implements DBPlugin
 
         delete.init(ctx);
         delete.setDB(db);
+
+        query.init(ctx);
+        query.setDB(db);
     }
 
     @Override
@@ -106,8 +112,7 @@ public class MongoDBPlugin implements DBPlugin
     @Override
     public QueryCommand getQueryCommand()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return query;
     }
 
     @Override

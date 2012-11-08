@@ -1,14 +1,17 @@
 package dbapi.api;
 
 
+import java.util.List;
+
 import com.google.common.base.Preconditions;
 
 import dbapi.kernel.Kernel;
 import dbapi.kernel.annotation.AnnotatedEntity;
 import dbapi.plugins.DBPlugin;
-import dbapi.plugins.GetCommand;
-import dbapi.plugins.SaveCommand;
 import dbapi.plugins.DeleteCommand;
+import dbapi.plugins.GetCommand;
+import dbapi.plugins.QueryCommand;
+import dbapi.plugins.SaveCommand;
 /**
  * 
  * @author alex
@@ -43,6 +46,15 @@ public class DBSession
     {
         final DBQuery<T> query = DBQuery.<T> on(cls);
         return query;
+    }
+
+    public <T> List<T> query(final DBQuery<T> query)
+    {
+        final QueryCommand cmd = db.getQueryCommand();
+        final AnnotatedEntity def = kernel.getAnnotationService().lookup(query.getType().getName());
+        Preconditions.checkArgument(null != def, "The class " + query.getType().getName() + " hasn't been registered in the runtime yet");
+        final List<T> res = cmd.query(query, def);
+        return res;
     }
 
     public void save(final Object entity)
