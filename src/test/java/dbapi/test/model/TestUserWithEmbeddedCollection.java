@@ -1,4 +1,4 @@
-package dbapi.test.system.model;
+package dbapi.test.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import dbapi.api.meta.DBTable;
  */
 @DBEntity
 @DBTable(name = "user")
-public class UserWithEmbeddedCollection
+public class TestUserWithEmbeddedCollection
 {
     @DBId
     @DBColumn
@@ -27,7 +27,7 @@ public class UserWithEmbeddedCollection
     private String password;
 
     @DBColumn
-    private List<UserFriend> friends = new ArrayList<UserFriend>();
+    private List<TestUserFriend> friends = new ArrayList<TestUserFriend>();
 
 
 
@@ -61,12 +61,12 @@ public class UserWithEmbeddedCollection
         this.password = password;
     }
 
-    public List<UserFriend> getFriends()
+    public List<TestUserFriend> getFriends()
     {
         return friends;
     }
 
-    public void setFriends(final List<UserFriend> friend)
+    public void setFriends(final List<TestUserFriend> friend)
     {
         this.friends = friend;
     }
@@ -98,7 +98,7 @@ public class UserWithEmbeddedCollection
         {
             return false;
         }
-        final UserWithEmbeddedCollection other = (UserWithEmbeddedCollection) obj;
+        final TestUserWithEmbeddedCollection other = (TestUserWithEmbeddedCollection) obj;
         if (friends == null)
         {
             if (other.friends != null)

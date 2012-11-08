@@ -1,10 +1,10 @@
-package dbapi.test.system.model;
+package dbapi.test.model;
 
 import dbapi.api.meta.DBColumn;
 import dbapi.api.meta.DBEntity;
 
 @DBEntity
-public class UserFriend
+public class TestUserFriend
 {
     @DBColumn
     private String id;
@@ -57,7 +57,7 @@ public class UserFriend
         {
             return false;
         }
-        final UserFriend other = (UserFriend) obj;
+        final TestUserFriend other = (TestUserFriend) obj;
         if (id == null)
         {
             if (other.id != null)

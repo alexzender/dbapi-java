@@ -39,9 +39,17 @@ public class MongoSerializer
         try
         {
             res = cls.newInstance();
-
+            if(log.isDebugEnabled())
+            {
+                log.debug("Deserializing class " + cls.getName());
+            }
             for (final String key : target.keySet())
             {
+                if(log.isDebugEnabled())
+                {
+                    log.debug("\tDeserializing field " + key);
+                }
+
                 if ("_id".equals(key))
                 {
                     def.setId(res, ObjectId.class.cast(target.get(key)).toStringMongod());

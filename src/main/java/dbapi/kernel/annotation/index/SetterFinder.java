@@ -41,6 +41,11 @@ public class SetterFinder
             log.debug("Error when processing method " + field.getColumn() + " in class " + cls.getName(), e);
             throw new KernelException(e);
         }
+        catch(final Exception e)
+        {
+            log.debug("Failed to find setter in " + field.getColumn() + " in class " + cls.getName(), e);
+            throw new KernelException(e);
+        }
 
     }
 }

@@ -1,4 +1,4 @@
-package dbapi.test.system.model;
+package dbapi.test.model;
 
 import dbapi.api.meta.DBColumn;
 import dbapi.api.meta.DBEntity;
@@ -12,7 +12,7 @@ import dbapi.api.meta.DBTable;
  */
 @DBEntity
 @DBTable(name = "user")
-public class User
+public class TestUser
 {
     @DBId
     @DBColumn
@@ -76,7 +76,7 @@ public class User
         {
             return false;
         }
-        final User other = (User) obj;
+        final TestUser other = (TestUser) obj;
         if (id == null)
         {
             if (other.id != null)

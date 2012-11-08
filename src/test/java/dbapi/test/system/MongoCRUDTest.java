@@ -23,9 +23,9 @@ import dbapi.api.DBConfig;
 import dbapi.api.DBQuery;
 import dbapi.api.DBSession;
 import dbapi.api.DBSessionFactory;
-import dbapi.test.system.model.User;
-import dbapi.test.system.model.UserFriend;
-import dbapi.test.system.model.UserWithEmbeddedCollection;
+import dbapi.test.model.TestUser;
+import dbapi.test.model.TestUserFriend;
+import dbapi.test.model.TestUserWithEmbeddedCollection;
 
 /**
  * 
@@ -40,7 +40,7 @@ public class MongoCRUDTest
     private static DBSessionFactory factory;
     private DBSession em;
 
-    private final List<UserWithEmbeddedCollection> cleanUpQueue = new ArrayList<UserWithEmbeddedCollection>();
+    private final List<TestUserWithEmbeddedCollection> cleanUpQueue = new ArrayList<TestUserWithEmbeddedCollection>();
 
     @BeforeClass
     public static void setUpGlobal()
@@ -54,9 +54,9 @@ public class MongoCRUDTest
         cfg.setDatabase("strimko-test");
 
         final Set<Class<?>> entities = new HashSet<Class<?>>();
-        entities.add(User.class);
-        entities.add(UserFriend.class);
-        entities.add(UserWithEmbeddedCollection.class);
+        entities.add(TestUser.class);
+        entities.add(TestUserFriend.class);
+        entities.add(TestUserWithEmbeddedCollection.class);
 
         factory = DBAPI.getFactory(cfg, entities);
         log.debug("Created factory");
@@ -83,7 +83,7 @@ public class MongoCRUDTest
     @After
     public void tearDown()
     {
-        for (final UserWithEmbeddedCollection user : cleanUpQueue)
+        for (final TestUserWithEmbeddedCollection user : cleanUpQueue)
         {
             try
             {
@@ -103,11 +103,11 @@ public class MongoCRUDTest
     {
         log.info("CRUD scenario started");
 
-        final UserWithEmbeddedCollection user = new UserWithEmbeddedCollection();
+        final TestUserWithEmbeddedCollection user = new TestUserWithEmbeddedCollection();
         user.setUsername("john");
         user.setPassword("1234");
 
-        final UserFriend userFriend = new UserFriend();
+        final TestUserFriend userFriend = new TestUserFriend();
         userFriend.setId("1234");
         userFriend.setUsername("Fake");
 
@@ -119,17 +119,17 @@ public class MongoCRUDTest
 
         cleanUpQueue.add(user);
 
-        UserWithEmbeddedCollection userCopy = em.get(UserWithEmbeddedCollection.class, user.getId());
+        TestUserWithEmbeddedCollection userCopy = em.get(TestUserWithEmbeddedCollection.class, user.getId());
 
         assertNotNull("Failed to lookup newly created object ", userCopy);
         assertEquals("Saved&Read Objects do not equal", user, userCopy);
         assertTrue("Failed to load embedded collection ", null != userCopy.getFriends() && userCopy.getFriends().size() == 1);
 
-        final DBQuery<UserWithEmbeddedCollection> query = em.queryOn(UserWithEmbeddedCollection.class);
+        final DBQuery<TestUserWithEmbeddedCollection> query = em.queryOn(TestUserWithEmbeddedCollection.class);
         query.getModel().setUsername("john");
 
 
-        final List<UserWithEmbeddedCollection> queryRes = em.query(query);
+        final List<TestUserWithEmbeddedCollection> queryRes = em.query(query);
         assertNotNull("Failed search for a newly created object ", queryRes);
         assertTrue("Failed to find newly created object", !queryRes.isEmpty());
         assertTrue("Search returned more then one results", queryRes.size() == 1);
@@ -140,7 +140,7 @@ public class MongoCRUDTest
 
         cleanUpQueue.remove(user);
 
-        userCopy = em.get(UserWithEmbeddedCollection.class, user.getId());
+        userCopy = em.get(TestUserWithEmbeddedCollection.class, user.getId());
 
         assertNull("Found previously deleted object", userCopy);
 

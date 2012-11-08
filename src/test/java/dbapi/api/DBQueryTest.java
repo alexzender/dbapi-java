@@ -7,7 +7,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import dbapi.api.DBQuery;
-import dbapi.test.system.model.User;
+import dbapi.test.model.TestUser;
 
 /**
  * 
@@ -20,7 +20,7 @@ public class DBQueryTest
     @Test
     public void testQueryCriteria()
     {
-        final DBQuery<User> query = DBQuery.<User>on(User.class);
+        final DBQuery<TestUser> query = DBQuery.<TestUser>on(TestUser.class);
         final String username = "john";
         query.getModel().setUsername(username);
 

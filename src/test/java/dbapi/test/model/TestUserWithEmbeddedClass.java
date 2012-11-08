@@ -1,4 +1,4 @@
-package dbapi.test.system.model;
+package dbapi.test.model;
 
 import dbapi.api.meta.DBColumn;
 import dbapi.api.meta.DBId;
@@ -8,7 +8,7 @@ import dbapi.api.meta.DBId;
  *
  * Nov 7, 2012
  */
-public class UserWithEmbeddedClass
+public class TestUserWithEmbeddedClass
 {
     @DBId
     @DBColumn
@@ -20,7 +20,7 @@ public class UserWithEmbeddedClass
     private String password;
 
     @DBColumn
-    private UserFriend friend;
+    private TestUserFriend friend;
 
 
 
@@ -55,12 +55,12 @@ public class UserWithEmbeddedClass
         this.password = password;
     }
 
-    public UserFriend getFriend()
+    public TestUserFriend getFriend()
     {
         return friend;
     }
 
-    public void setFriend(final UserFriend friend)
+    public void setFriend(final TestUserFriend friend)
     {
         this.friend = friend;
     }

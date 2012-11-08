@@ -21,7 +21,7 @@ import dbapi.api.DBAPI;
 import dbapi.api.DBConfig;
 import dbapi.api.DBSession;
 import dbapi.api.DBSessionFactory;
-import dbapi.test.system.model.User;
+import dbapi.test.model.TestUser;
 
 /**
  * 
@@ -36,7 +36,7 @@ public class CassandraCRUDTest
     private static DBSessionFactory factory;
     private DBSession em;
 
-    private final List<User> cleanUpQueue = new ArrayList<User>();
+    private final List<TestUser> cleanUpQueue = new ArrayList<TestUser>();
 
     @BeforeClass
     public static void setUpGlobal()
@@ -50,7 +50,7 @@ public class CassandraCRUDTest
         config.setPort(9160);
 
         final Set<Class<?>> entities = new HashSet<Class<?>>();
-        entities.add(User.class);
+        entities.add(TestUser.class);
 
         factory = DBAPI.getFactory(config, entities);
         log.debug("Created factory");
@@ -77,7 +77,7 @@ public class CassandraCRUDTest
     @After
     public void tearDown()
     {
-        for(final User user : cleanUpQueue)
+        for(final TestUser user : cleanUpQueue)
         {
             try
             {
@@ -95,7 +95,7 @@ public class CassandraCRUDTest
     {
         log.info("CRUD scenario started");
 
-        final User user = new User();
+        final TestUser user = new TestUser();
         user.setUsername("john");
         user.setPassword("1234");
 
@@ -105,7 +105,7 @@ public class CassandraCRUDTest
 
         cleanUpQueue.add(user);
 
-        User userCopy = em.get(User.class, user.getId());
+        TestUser userCopy = em.get(TestUser.class, user.getId());
 
         assertNotNull("Failed to lookup newly created object ", userCopy);
         assertEquals("Failed to read the copy of a newly created User object", user, userCopy);
@@ -114,7 +114,7 @@ public class CassandraCRUDTest
 
         cleanUpQueue.remove(user);
 
-        userCopy = em.get(User.class, user.getId());
+        userCopy = em.get(TestUser.class, user.getId());
 
         assertNull("Found previously deleted object", userCopy);
 

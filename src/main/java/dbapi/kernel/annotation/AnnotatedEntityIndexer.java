@@ -64,9 +64,11 @@ public class AnnotatedEntityIndexer
             }
 
             final AnnotatedField index = columnVisitor.visitField(field, ann);
-
-            setterVisitor.visit(cls, index);
-            idVisitor.visitField(cls, field, ann);
+            if(null != index)
+            {
+                setterVisitor.visit(cls, index);
+                idVisitor.visitField(cls, field, ann);
+            }
         }
     }
 
@@ -96,12 +98,15 @@ public class AnnotatedEntityIndexer
 
             //discover true column name in the target system if any
             final AnnotatedField field = columnVisitor.visitMethod(method, ann);
+            if(null != field)
+            {
+                final boolean idMethod = idVisitor.visitMethod(method, cls, ann);
+                field.setId(idMethod);
 
-            final boolean idMethod = idVisitor.visitMethod(method, cls, ann);
-            field.setId(idMethod);
-
-            setterVisitor.visit(cls, field);
+                setterVisitor.visit(cls, field);
+            }
         }
+
     }
 
     private boolean skipCollection(final Class<?> cls, final String name)
@@ -117,6 +122,8 @@ public class AnnotatedEntityIndexer
 
     private boolean canSkipField(final Field field)
     {
+        //FIXME: filter static fields out
+
         // no need to save this one
         final DBTransient transientM = field.getAnnotation(DBTransient.class);
         if (transientM != null)

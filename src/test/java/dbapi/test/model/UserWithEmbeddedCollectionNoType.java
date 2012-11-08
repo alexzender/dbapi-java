@@ -1,4 +1,4 @@
-package dbapi.test.system.model;
+package dbapi.test.model;
 
 import java.util.List;
 
