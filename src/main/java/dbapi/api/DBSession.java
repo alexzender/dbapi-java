@@ -6,9 +6,9 @@ import com.google.common.base.Preconditions;
 import dbapi.kernel.Kernel;
 import dbapi.kernel.annotation.AnnotatedEntity;
 import dbapi.plugins.DBPlugin;
-import dbapi.plugins.FindCommand;
-import dbapi.plugins.PersistCommand;
-import dbapi.plugins.RemoveCommand;
+import dbapi.plugins.GetCommand;
+import dbapi.plugins.SaveCommand;
+import dbapi.plugins.DeleteCommand;
 /**
  * 
  * @author alex
@@ -39,9 +39,15 @@ public class DBSession
         return def;
     }
 
+    public <T> DBQuery<T> queryOn(final Class<T> cls)
+    {
+        final DBQuery<T> query = DBQuery.<T> on(cls);
+        return query;
+    }
+
     public void save(final Object entity)
     {
-        final PersistCommand cmd = db.getPersistCommand();
+        final SaveCommand cmd = db.getPersistCommand();
 
         final AnnotatedEntity def = validateAndLookup(entity);
 
@@ -57,7 +63,7 @@ public class DBSession
 
     public void delete(final Object entity)
     {
-        final RemoveCommand cmd = db.getRemoveCommand();
+        final DeleteCommand cmd = db.getRemoveCommand();
 
         final AnnotatedEntity def = validateAndLookup(entity);
 
@@ -73,7 +79,7 @@ public class DBSession
 
         Preconditions.checkArgument(null != def, "The entity class " + def.getClass().getName() + " hasn't been registered in the JPA runtime yet.");
 
-        final FindCommand finder = db.getFindCommand();
+        final GetCommand finder = db.getFindCommand();
 
         final T res = finder.find(entityClass, def, primaryKey);
 

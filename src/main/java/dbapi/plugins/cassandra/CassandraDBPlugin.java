@@ -8,9 +8,9 @@ import dbapi.api.UnsupportedFeatureException;
 import dbapi.plugins.DBPlugin;
 import dbapi.plugins.DBPluginContext;
 import dbapi.plugins.DBPluginException;
-import dbapi.plugins.RemoveCommand;
-import dbapi.plugins.FindCommand;
-import dbapi.plugins.PersistCommand;
+import dbapi.plugins.DeleteCommand;
+import dbapi.plugins.GetCommand;
+import dbapi.plugins.SaveCommand;
 import dbapi.plugins.QueryCommand;
 import dbapi.plugins.SchemaCreateCommand;
 import dbapi.plugins.SchemaDeleteCommand;
@@ -62,19 +62,19 @@ public class CassandraDBPlugin
     }
 
     @Override
-    public FindCommand getFindCommand()
+    public GetCommand getFindCommand()
     {
         return find;
     }
 
     @Override
-    public PersistCommand getPersistCommand()
+    public SaveCommand getPersistCommand()
     {
         return persist;
     }
 
     @Override
-    public RemoveCommand getRemoveCommand()
+    public DeleteCommand getRemoveCommand()
     {        
         return remove;
     }

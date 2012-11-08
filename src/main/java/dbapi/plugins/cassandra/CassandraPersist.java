@@ -25,7 +25,7 @@ import com.google.common.base.Preconditions;
 import dbapi.kernel.annotation.AnnotatedEntity;
 import dbapi.kernel.annotation.AnnotatedField;
 import dbapi.plugins.DBPluginException;
-import dbapi.plugins.PersistCommand;
+import dbapi.plugins.SaveCommand;
 /**
  * 
  * @author alex
@@ -33,7 +33,7 @@ import dbapi.plugins.PersistCommand;
  */
 public class CassandraPersist
 extends CassandraCommand
-implements PersistCommand
+implements SaveCommand
 {
     private static final Logger log = Logger.getLogger(CassandraPersist.class);
 

@@ -20,7 +20,7 @@ public class AnnotatedEntity
     private Method idGetter;
     private Method idSetter;
 
-    private Class<?> clazz;
+    private Class<?> type;
     private Map<String, Method> getters = new HashMap<String, Method>();
     private Map<String, AnnotatedField> fields = new HashMap<String, AnnotatedField>();
 
@@ -49,13 +49,13 @@ public class AnnotatedEntity
     {
         this.idSetter = idSetter;
     }
-    public Class<?> getClazz()
+    public Class<?> getType()
     {
-        return clazz;
+        return type;
     }
-    public void setClazz(final Class<?> clazz)
+    public void setType(final Class<?> type)
     {
-        this.clazz = clazz;
+        this.type = type;
     }
     public Map<String, Method> getGetters()
     {

@@ -22,12 +22,8 @@ public class User
     private String username;
     @DBColumn
     private String password;
-    @DBColumn
-    private String displayName;
-    @DBColumn
-    private String bio;
-    @DBColumn
-    private UserFriend friend;
+
+
 
 
     public String getId()
@@ -54,32 +50,6 @@ public class User
     public void setPassword(final String password)
     {
         this.password = password;
-    }
-    public String getDisplayName()
-    {
-        return displayName;
-    }
-    public void setDisplayName(final String displayName)
-    {
-        this.displayName = displayName;
-    }
-    public String getBio()
-    {
-        return bio;
-    }
-    public void setBio(final String bio)
-    {
-        this.bio = bio;
-    }
-
-    public UserFriend getFriend()
-    {
-        return friend;
-    }
-
-    public void setFriend(final UserFriend friend)
-    {
-        this.friend = friend;
     }
 
     @Override

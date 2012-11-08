@@ -18,7 +18,7 @@ import org.apache.thrift.TException;
 import dbapi.kernel.annotation.AnnotatedEntity;
 import dbapi.kernel.annotation.AnnotatedField;
 import dbapi.plugins.DBPluginException;
-import dbapi.plugins.FindCommand;
+import dbapi.plugins.GetCommand;
 /**
  * 
  * @author alex
@@ -26,7 +26,7 @@ import dbapi.plugins.FindCommand;
  */
 public class CassandraFind
 extends CassandraCommand
-implements FindCommand
+implements GetCommand
 {
 
     @Override

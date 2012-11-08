@@ -97,7 +97,6 @@ public class CassandraCRUDTest
 
         final User user = new User();
         user.setUsername("john");
-        user.setDisplayName("John Doe");
         user.setPassword("1234");
 
         em.save(user);

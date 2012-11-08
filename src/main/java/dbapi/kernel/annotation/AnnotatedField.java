@@ -25,6 +25,7 @@ public class AnnotatedField
     private boolean id;
     private boolean lob = false;
     private AnnotatedEntity complexDef;
+    private Class<?> type;
 
     public String getColumn()
     {
@@ -88,15 +89,12 @@ public class AnnotatedField
 
     public Class<?> getType()
     {
-        if (null != classField)
-        {
-            return classField.getType();
-        }
-        else if (null != getter)
-        {
-            return getter.getReturnType();
-        }
-        return null;
+        return type;
+    }
+
+    public void setType(final Class<?> type)
+    {
+        this.type = type;
     }
 
     public boolean isComplexType()
@@ -111,12 +109,11 @@ public class AnnotatedField
 
     public boolean isCollection()
     {
-        final Class<?> type = getType();
-        final boolean res = type.isArray() || type.isAssignableFrom(Collection.class);
+        final boolean res = Collection.class.isAssignableFrom(getType());
         return res;
     }
 
-    public <T extends Annotation> T getAnnotation(final Class<T> annotationClass)
+    public <A extends Annotation> A getAnnotation(final Class<A> annotationClass)
     {
         if (null != classField)
         {

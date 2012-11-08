@@ -12,10 +12,10 @@ import com.mongodb.WriteConcern;
 import dbapi.api.KernelException;
 import dbapi.plugins.DBPlugin;
 import dbapi.plugins.DBPluginContext;
-import dbapi.plugins.FindCommand;
-import dbapi.plugins.PersistCommand;
+import dbapi.plugins.GetCommand;
+import dbapi.plugins.SaveCommand;
 import dbapi.plugins.QueryCommand;
-import dbapi.plugins.RemoveCommand;
+import dbapi.plugins.DeleteCommand;
 import dbapi.plugins.SchemaCreateCommand;
 import dbapi.plugins.SchemaDeleteCommand;
 
@@ -31,13 +31,13 @@ public class MongoDBPlugin implements DBPlugin
     private DB db;
 
     @Inject
-    private MongoPersist save;
+    private MongoSave save;
 
     @Inject
-    private MongoFind get;
+    private MongoGet get;
 
     @Inject
-    private MongoRemove delete;
+    private MongoDelete delete;
 
     @Override
     public void init(final DBPluginContext ctx)
@@ -86,19 +86,19 @@ public class MongoDBPlugin implements DBPlugin
     }
 
     @Override
-    public FindCommand getFindCommand()
+    public GetCommand getFindCommand()
     {
         return get;
     }
 
     @Override
-    public PersistCommand getPersistCommand()
+    public SaveCommand getPersistCommand()
     {
         return save;
     }
 
     @Override
-    public RemoveCommand getRemoveCommand()
+    public DeleteCommand getRemoveCommand()
     {
         return delete;
     }

@@ -12,7 +12,7 @@ import org.apache.thrift.TException;
 
 import dbapi.kernel.annotation.AnnotatedEntity;
 import dbapi.plugins.DBPluginException;
-import dbapi.plugins.RemoveCommand;
+import dbapi.plugins.DeleteCommand;
 /**
  * 
  * @author alex
@@ -20,7 +20,7 @@ import dbapi.plugins.RemoveCommand;
  */
 public class CassandraRemove
     extends CassandraCommand
-    implements RemoveCommand
+    implements DeleteCommand
 {
 
     @Override

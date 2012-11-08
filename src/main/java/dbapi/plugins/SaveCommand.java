@@ -6,7 +6,7 @@ package dbapi.plugins;
  * @author alex
  *
  */
-public interface RemoveCommand
+public interface SaveCommand
     extends DBPluginCommand, EntityAwareCommand
 {
 

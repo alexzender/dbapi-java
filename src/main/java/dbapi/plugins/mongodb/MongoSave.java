@@ -1,15 +1,18 @@
 package dbapi.plugins.mongodb;
 
+import javax.inject.Inject;
+
 import org.bson.types.ObjectId;
 
 import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
 import dbapi.api.KernelException;
 import dbapi.kernel.annotation.AnnotatedEntity;
-import dbapi.plugins.PersistCommand;
+import dbapi.plugins.SaveCommand;
 
 /**
  * 
@@ -17,17 +20,29 @@ import dbapi.plugins.PersistCommand;
  * 
  *         Nov 4, 2012
  */
-public class MongoPersist extends MongoCommand implements PersistCommand
+public class MongoSave extends MongoCommand implements SaveCommand
 {
+    @Inject
+    private MongoSerializer serializer;
 
     @Override
     public void execute(final Object entity, final AnnotatedEntity def)
     {
         final DBCollection coll = getDB().getCollection(def.getTable());
 
-        final BasicDBObject doc = object2doc(entity, def);
+        final BasicDBObject doc = serializer.object2doc(entity, def);
 
-        final WriteResult res = coll.insert(doc);
+        WriteResult res = null;
+
+        if(doc.containsKey("_id"))
+        {
+            final DBObject query = new BasicDBObject("_id", doc.get("_id"));
+            coll.update(query, doc);
+        }
+        else
+        {
+            res = coll.insert(doc);
+        }
 
         final String error = res.getError();
 

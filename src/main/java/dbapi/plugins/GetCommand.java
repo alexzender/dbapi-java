@@ -7,7 +7,7 @@ import dbapi.kernel.annotation.AnnotatedEntity;
  * @author alex
  *
  */
-public interface FindCommand extends DBPluginCommand
+public interface GetCommand extends DBPluginCommand
 {
     <T> T find(Class<T> cls, AnnotatedEntity def, String id);
 }

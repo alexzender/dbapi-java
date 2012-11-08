@@ -6,7 +6,7 @@ package dbapi.plugins;
  * @author alex
  *
  */
-public interface PersistCommand
+public interface DeleteCommand
     extends DBPluginCommand, EntityAwareCommand
 {
 

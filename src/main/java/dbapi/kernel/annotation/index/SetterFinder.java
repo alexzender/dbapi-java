@@ -14,34 +14,33 @@ import dbapi.kernel.annotation.AnnotatedField;
 public class SetterFinder
 {
     private static Logger log = Logger.getLogger(SetterFinder.class);
-    
-    public void visit(Class<?> cls, Method method, AnnotatedField field)
+
+    public void visit(final Class<?> cls, final AnnotatedField field)
     {
-        String methodName = method.getName();
         try
         {
-            
-            Method setter = cls.getMethod("set" + methodName.substring(3), method.getReturnType());
+            final String setterName = "set" +  field.getColumn().substring(0, 1).toUpperCase() + field.getColumn().substring(1);
+            final Method setter = cls.getMethod(setterName, field.getType());
             if (setter.getParameterTypes().length != 1)
             {
-                throw new IllegalArgumentException("The setter method " + methodName + " must have one parameter only. Class: " + cls.getName());
+                throw new IllegalArgumentException("The setter method " + setterName + " must have one parameter only. Class: " + cls.getName());
             }
-            else if (setter.getParameterTypes()[0] != method.getReturnType())
+            else if (setter.getParameterTypes()[0] != field.getType())
             {
-                throw new IllegalArgumentException("The setter method " + methodName + " doesn't return valid type of object");
-            }                
+                throw new IllegalArgumentException("The setter method " + setterName + " doesn't return valid type of object");
+            }
             field.setSetter(setter);
         }
-        catch (SecurityException e)
+        catch (final SecurityException e)
         {
-            log.debug("Failed to process class " + cls.getName() + ", method " + methodName, e);
+            log.debug("Failed to process class " + cls.getName() + ", method " + field.getColumn(), e);
             throw new KernelException(e);
         }
-        catch (NoSuchMethodException e)
+        catch (final NoSuchMethodException e)
         {
-            log.debug("Error when processing method " + methodName + " in class " + cls.getName(), e);
+            log.debug("Error when processing method " + field.getColumn() + " in class " + cls.getName(), e);
             throw new KernelException(e);
         }
-        
+
     }
 }

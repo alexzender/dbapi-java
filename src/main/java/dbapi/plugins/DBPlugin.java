@@ -13,9 +13,9 @@ public interface DBPlugin
     
     String getId();
     
-    FindCommand getFindCommand();
-    PersistCommand getPersistCommand();
-    RemoveCommand getRemoveCommand();
+    GetCommand getFindCommand();
+    SaveCommand getPersistCommand();
+    DeleteCommand getRemoveCommand();
     QueryCommand getQueryCommand();
     
     SchemaCreateCommand getSchemaCreateCommand();

@@ -35,15 +35,43 @@ public class AnnotatedEntityIndexer
     @Inject
     private SetterFinder setterVisitor;
 
-    public AnnotatedEntity build(final Class<?> cls)
+    public  AnnotatedEntity build(final Class<?> cls)
     {
         final AnnotatedEntity ann = new AnnotatedEntity();
 
-        ann.setClazz(cls);
+        ann.setType(cls);
 
         tableName.visit(cls, ann);
 
+        processFields(cls, ann);
+
         //index methods
+        processMethods(cls, ann);
+
+        return ann;
+    }
+
+    private void processFields(final Class<?> cls, final AnnotatedEntity ann)
+    {
+        final Field[] fields = cls.getDeclaredFields();
+
+        // index fields first
+        for (final Field field : fields)
+        {
+            if (canSkipField(field))
+            {
+                continue;
+            }
+
+            final AnnotatedField index = columnVisitor.visitField(field, ann);
+
+            setterVisitor.visit(cls, index);
+            idVisitor.visitField(cls, field, ann);
+        }
+    }
+
+    private void processMethods(final Class<?> cls, final AnnotatedEntity ann)
+    {
         final Method[] methods = cls.getMethods();
 
         for (final Method method : methods)
@@ -55,40 +83,36 @@ public class AnnotatedEntityIndexer
                 continue;
             }
 
-            final boolean idMethod = idVisitor.visitMethod(method, cls, ann);
+            final String fieldName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
 
-            ann.addGetter(method);
-
-            final AnnotatedField field = new AnnotatedField();
-            field.setGetter(method);
-            field.setId(idMethod);
-
-            //discover true column name in the target system if any
-            columnVisitor.visitMethod(method, field);
-
-            setterVisitor.visit(cls, method, field);
-
-            final String fieldName = methodName.substring(3,4).toLowerCase() + methodName.substring(4);
-            ann.getFields().put(fieldName, field);
-        }
-
-        final Field [] fields =  cls.getDeclaredFields();
-
-        for (final Field field : fields)
-        {
-            if(canSkipField(field))
+            //already processed?
+            if (ann.getFields().containsKey(fieldName))
             {
                 continue;
             }
 
-            idVisitor.visitField(cls, field, ann);
 
-            columnVisitor.visitField(field, ann);
+            ann.addGetter(method);
+
+            //discover true column name in the target system if any
+            final AnnotatedField field = columnVisitor.visitMethod(method, ann);
+
+            final boolean idMethod = idVisitor.visitMethod(method, cls, ann);
+            field.setId(idMethod);
+
+            setterVisitor.visit(cls, field);
         }
+    }
 
-
-
-        return ann;
+    private boolean skipCollection(final Class<?> cls, final String name)
+    {
+        /*        final TypeVariable<Class<?>>[] params = ((Class) cls).getTypeParameters();
+        if (params.length == 0 || params.length > 1)
+        {
+            log.warn("Ignoring collection field. Unsufficient generic information for the  " + name);
+            return true;
+        }*/
+        return false;
     }
 
     private boolean canSkipField(final Field field)
@@ -100,8 +124,13 @@ public class AnnotatedEntityIndexer
             return true;
         }
 
-        //TODO: no support for relations for now
-        if(Collection.class.isAssignableFrom(field.getType()))
+        // skip arrays for now
+        if (field.getType().isArray())
+        {
+            return true;
+        }
+
+        if (Collection.class.isAssignableFrom(field.getType()) && skipCollection(field.getType(), field.getName()))
         {
             return true;
         }
@@ -126,13 +155,16 @@ public class AnnotatedEntityIndexer
             return true;
         }
 
-        //skip collections for now
-        if (Collection.class.isAssignableFrom(method.getReturnType()))
+        // skip arrays for now
+        if (method.getReturnType().isArray())
         {
             return true;
         }
 
-        //skip collection mappings for now
+        if (method.getReturnType().isAssignableFrom(Collection.class) && skipCollection(method.getReturnType(), method.getName()))
+        {
+            return true;
+        }
 
 
         return false;

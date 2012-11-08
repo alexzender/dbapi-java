@@ -10,7 +10,7 @@ import com.mongodb.WriteResult;
 
 import dbapi.api.KernelException;
 import dbapi.kernel.annotation.AnnotatedEntity;
-import dbapi.plugins.RemoveCommand;
+import dbapi.plugins.DeleteCommand;
 
 /**
  * 
@@ -18,7 +18,7 @@ import dbapi.plugins.RemoveCommand;
  * 
  *         Nov 4, 2012
  */
-public class MongoRemove extends MongoCommand implements RemoveCommand
+public class MongoDelete extends MongoCommand implements DeleteCommand
 {
 
     @Override

@@ -56,7 +56,7 @@ implements KernelService
 
     }
 
-    public AnnotatedEntity create(final Class<?> cls)
+    public  AnnotatedEntity create(final Class<?> cls)
     {
         return indexer.build(cls);
     }
