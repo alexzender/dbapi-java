@@ -135,6 +135,12 @@ public class MongoCRUDTest
         assertTrue("Search returned more then one results", queryRes.size() == 1);
         assertEquals("Saved&Read Objects do not equal", user, queryRes.get(0));
 
+        user.setPassword("new");
+        em.save(user);
+
+        userCopy = em.get(TestUserWithEmbeddedCollection.class, user.getId());
+
+        assertEquals("Failed to update the password field", user.getPassword(), userCopy.getPassword());
 
         em.delete(user);
 

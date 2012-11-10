@@ -37,7 +37,7 @@ public class MongoSave extends MongoCommand implements SaveCommand
         if(doc.containsKey("_id"))
         {
             final DBObject query = new BasicDBObject("_id", doc.get("_id"));
-            coll.update(query, doc);
+            res = coll.update(query, doc);
         }
         else
         {
