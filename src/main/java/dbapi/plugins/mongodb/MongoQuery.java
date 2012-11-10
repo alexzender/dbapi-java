@@ -32,20 +32,28 @@ public class MongoQuery extends MongoCommand implements QueryCommand
     {
         final DBCollection coll = getDB().getCollection(def.getTable());
 
-        final DBObject filter = new BasicDBObject();
+        final List<T> res = new ArrayList<T>();
 
         final Map<String, Object> crit = query.getCriteria();
 
-        for(final String key : crit.keySet())
+        DBCursor cursor = null;
+
+        if(crit.isEmpty())
         {
-            filter.put(key, crit.get(key));
+            cursor =  coll.find();
+        }
+        else
+        {
+            final DBObject filter = new BasicDBObject();
+            for(final String key : crit.keySet())
+            {
+                filter.put(key, crit.get(key));
+            }
+            cursor =  coll.find(filter);
         }
 
-        final List<T> res = new ArrayList<T>();
-
-        final DBCursor cursor = coll.find(filter);
-
-        try {
+        try
+        {
             while(cursor.hasNext())
             {
                 final DBObject obj = cursor.next();
