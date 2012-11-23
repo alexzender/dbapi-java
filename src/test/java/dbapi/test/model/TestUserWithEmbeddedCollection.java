@@ -6,15 +6,13 @@ import java.util.List;
 import dbapi.api.meta.DBColumn;
 import dbapi.api.meta.DBEntity;
 import dbapi.api.meta.DBId;
-import dbapi.api.meta.DBTable;
 /**
  * 
  * @author alex
  *
  * Nov 7, 2012
  */
-@DBEntity
-@DBTable(name = "user")
+@DBEntity(table = "user")
 public class TestUserWithEmbeddedCollection
 {
     @DBId

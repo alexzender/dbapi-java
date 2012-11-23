@@ -2,7 +2,7 @@ package dbapi.kernel.annotation.index;
 
 import com.google.common.base.Strings;
 
-import dbapi.api.meta.DBTable;
+import dbapi.api.meta.DBEntity;
 import dbapi.kernel.annotation.AnnotatedEntity;
 
 /**
@@ -15,17 +15,17 @@ public class TableNameIndexer
     public void visit(final Class<?> cls, final AnnotatedEntity entity)
     {
         String tableName = null;
-        final DBTable tbl = cls.getAnnotation(DBTable.class);
+        final DBEntity tbl = cls.getAnnotation(DBEntity.class);
 
         if(null != tbl)
         {
-            tableName = tbl.name();
+            tableName = tbl.table();
 
         }
 
         if(Strings.isNullOrEmpty(tableName))
         {
-            tableName = cls.getCanonicalName();
+            tableName = cls.getSimpleName();
         }
 
         entity.setTable(tableName);

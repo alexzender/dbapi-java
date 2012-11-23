@@ -37,7 +37,7 @@ public class DBSession
 
         final AnnotatedEntity def = kernel.getAnnotationService().lookup(entity.getClass().getName());
 
-        Preconditions.checkArgument(null != def, "The entity class " + entity.getClass().getName() + " hasn't been registered in the JPA runtime yet.");
+        Preconditions.checkArgument(null != def, "The entity class " + entity.getClass().getName() + " hasn't been registered in the dbapi-java runtime yet.");
 
         return def;
     }
@@ -52,7 +52,7 @@ public class DBSession
     {
         final QueryCommand cmd = db.getQueryCommand();
         final AnnotatedEntity def = kernel.getAnnotationService().lookup(query.getType().getName());
-        Preconditions.checkArgument(null != def, "The class " + query.getType().getName() + " hasn't been registered in the runtime yet");
+        Preconditions.checkArgument(null != def, "The class " + query.getType().getName() + " hasn't been registered in the dbapi-java runtime yet.");
         final List<T> res = cmd.query(query, def);
         return res;
     }
@@ -89,7 +89,7 @@ public class DBSession
 
         final AnnotatedEntity def = kernel.getAnnotationService().lookup(entityClass.getName());
 
-        Preconditions.checkArgument(null != def, "The entity class " + def.getClass().getName() + " hasn't been registered in the JPA runtime yet.");
+        Preconditions.checkArgument(null != def, "The entity class " + def.getClass().getName() + " hasn't been registered in the dbapi-java runtime yet.");
 
         final GetCommand finder = db.getFindCommand();
 
